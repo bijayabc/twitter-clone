@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
         hostname: 'i.guim.co.uk',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
     ],
   },
 };
