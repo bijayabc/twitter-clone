@@ -1,7 +1,7 @@
 import localFont from "next/font/local";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {CredentialResponse, GoogleLogin} from "@react-oauth/google"
-import { BiBell, BiBookmark, BiEnvelope, BiHomeCircle, BiSearch } from "react-icons/bi";
+import { BiBell, BiBookmark, BiEnvelope, BiHomeCircle, BiSearch, BiImage } from "react-icons/bi";
 import {FaXTwitter} from "react-icons/fa6"
 import { LuSquareSlash } from "react-icons/lu";
 import { BsPeople, BsPerson } from "react-icons/bs";
@@ -14,6 +14,8 @@ import toast from "react-hot-toast";
 import { useCurrentUser } from "@/hooks/user";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
+import { useCreateTweet, useGetAllTweets } from "@/hooks/tweet";
+import { Tweet } from "@/gql/graphql";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,7 +31,32 @@ const geistMono = localFont({
 export default function Home() {
 
   const {user} = useCurrentUser()
+  const {tweets} = useGetAllTweets()
+  const {mutate} = useCreateTweet()
+  const [content, setContent] = useState("")
+
   const queryClient = useQueryClient()
+
+  // add ' ,video/* ' to the accept attribute to also accept videos
+  const handleImageClick = useCallback( () => {
+    const input = document.createElement('input')
+    input.setAttribute('type', 'file')
+    input.setAttribute('accept', 'image/*')
+    input.click()
+  }, [])
+
+  const handleCreateTweet = useCallback((e: React.FormEvent) => {
+    if (content.trim() === "") {
+      toast.error("Tweet content cannot be empty!");
+      return;
+    }
+    try {
+      mutate({ content });
+      setContent(""); // Reset content after successful tweet
+    } catch (error) {
+      toast.error("Failed to create tweet!");
+    }
+  }, [content, mutate])
 
   const handleLoginWithGoogle = useCallback(async(cred: CredentialResponse) => {
     const googleToken = cred.credential
@@ -51,6 +78,7 @@ export default function Home() {
       window.localStorage.setItem('__twitter_token', verifyGoogleToken)
     }
 
+    // Triggers a refetch to update the query data after new token is set because old data is stale.
     await queryClient.invalidateQueries({queryKey: ['current-user']})
   }, [queryClient])
 
@@ -105,7 +133,8 @@ export default function Home() {
                 <p>@barshabc</p>
               </div>
 
-            </div>}
+            </div>
+          }
 
           </div>
         </div>
@@ -113,22 +142,51 @@ export default function Home() {
         {/* The overflow-y-auto property on the main feed changes the scrolling property such that 
         when the main feed overflows beyond the screen, only this component will scroll along the 
         y axis, if this property is not used, the whole page will scroll when content overflows */}
-        
+
         {/* Twitter Main Feed */}
         <div className="col-span-4 border-x-[0.01rem] border-[#2F3336] h-full overflow-y-auto">
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
+
+          {/* Create a tweet */}
+          <div className='border-t-[1px] border-[#2F3336] grid grid-cols-12 cursor-pointer py-3 px-4'>
+            {/* Profile Image */}
+            <div className="col-span-1">
+              {user?.profileImageURL && 
+                <Image 
+                src= {user?.profileImageURL}
+                alt="profile-pic" width={40} height={40}
+                className='rounded-full'/>
+              }
+            </div>
+
+            {/* Body */}
+            <div className="col-span-11">
+              <textarea name="tweet" id="tweet"
+                className="text-xl bg-transparent w-full pt-2 pl-1 focus:outline-none resize-none border-b border-b-slate-700"
+                placeholder="Share your thoughts..."
+                rows={3}
+                value={content}
+                onChange={e => setContent(e.target.value)}
+              ></textarea>
+
+              <div className="flex justify-between items-center py-1">
+                <div className="hover:bg-gray-800 p-2 rounded-full">
+                  <BiImage className="text-xl" onClick={handleImageClick}/>
+                </div>
+                <button 
+                onClick={handleCreateTweet}
+                className="text-md font-bold bg-[#1A8CD8] w-fit py-1 px-3 rounded-3xl"> 
+                  Post 
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Load all the tweets */}
+          {
+            tweets?.map(tweet => <FeedCard key={tweet?.id} data={tweet as Tweet}/>)
+          }
+
         </div>
 
         {/* Right Side bar */}

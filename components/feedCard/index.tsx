@@ -3,32 +3,71 @@ import Image from 'next/image'
 import { FaRegHeart, FaRegComment, FaRetweet, FaRegBookmark } from "react-icons/fa";
 import { IoMdStats } from "react-icons/io";
 import { GoUpload } from "react-icons/go";
+import { Tweet } from '@/gql/graphql';
+import { difference } from 'next/dist/build/utils';
 
+interface FeedCardProps {
+    data: Tweet
+}
 
-const FeedCard: React.FC = () => {
+const handleCreatedAt = (createdAt: string) => {
+    const now = new Date()
+    const createdDate = new Date(Number(createdAt));
+    const difference = now.getTime() - createdDate.getTime()
+
+    // Convert the difference to different time units
+    const seconds = Math.floor(difference / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const months = Math.floor(days / 30); // Approximate months (30 days)
+    const years = Math.floor(months / 12); // Approximate years (12 months)
+
+    // Create a human-readable string based on the difference
+    if (years > 0) {
+        return createdDate.toLocaleDateString();
+    } else if (months > 0) {
+        return createdDate.toLocaleDateString(undefined, { month: 'short', day: '2-digit' });
+    } else if (days > 0) {
+        return `${days}d`;
+    } else if (hours > 0) {
+        return `${hours}h`;
+    } else if (minutes > 0) {
+        return `${minutes}m`;
+    } else if (seconds > 0) {
+        return `${seconds}s`;
+    } else {
+        return 'Just now';
+    }
+}
+
+const FeedCard: React.FC<FeedCardProps> = (props) => {
+    const {data} = props
+
     return (
         <>
             {/* FeedCard */}
             <div className='border-t-[1px] border-[#2F3336] grid grid-cols-12 cursor-pointer py-3 px-4'>
                 {/* div for profile pic */}
-                <div className="col-span-1">
+                {data.author?.profileImageURL && <div className="col-span-1">
                     <Image 
-                    src= "https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=67773a9d419786091c958b2ad08eae5e" 
+                    src= {data.author?.profileImageURL} 
                     alt="profile-pic" width={40} height={40}
                     className='rounded-3xl'/>
-                </div>
+                </div>}
 
                 {/* div for content */}
                 <div className="col-span-11 flex flex-col items-start pl-1">
                     {/* tweet header */}
                     <div>
-                        <span className="font-semibold mr-2">Elon Musk</span>
-                        <span className="opacity-50">@elonmusk · 6h</span>
+                        <span className="font-semibold mr-2">{data.author?.firstName} {data.author?.lastName} </span>
+
+                        <span className="opacity-50">{handleCreatedAt(data.createdAt)}</span>
                     </div>
 
                     {/* tweet body */}
                     <div>
-                        I’m hearing via allies that federal government unions are scrambling to update their collective bargaining agreements to avoid getting fired. The prospect of being asked to return to the office 5 days per week like most working Americans apparently has them “in tears.”
+                        {data.content}
                     </div>
 
                     {/* tweet interaction icons */}
