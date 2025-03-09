@@ -4,7 +4,6 @@ import { FaRegHeart, FaRegComment, FaRetweet, FaRegBookmark } from "react-icons/
 import { IoMdStats } from "react-icons/io";
 import { GoUpload } from "react-icons/go";
 import { Tweet } from '@/gql/graphql';
-import { difference } from 'next/dist/build/utils';
 
 interface FeedCardProps {
     data: Tweet
