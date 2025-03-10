@@ -4,6 +4,7 @@ import { FaRegHeart, FaRegComment, FaRetweet, FaRegBookmark } from "react-icons/
 import { IoMdStats } from "react-icons/io";
 import { GoUpload } from "react-icons/go";
 import { Tweet } from '@/gql/graphql';
+import Link from 'next/link';
 
 interface FeedCardProps {
     data: Tweet
@@ -59,7 +60,9 @@ const FeedCard: React.FC<FeedCardProps> = (props) => {
                 <div className="col-span-11 flex flex-col items-start pl-1">
                     {/* tweet header */}
                     <div>
-                        <span className="font-semibold mr-2">{data.author?.firstName} {data.author?.lastName} </span>
+                        <Link href={`/${data.author?.id}`}>
+                            <span className="font-semibold mr-2">{data.author?.firstName} {data.author?.lastName} </span>
+                        </Link>
 
                         <span className="opacity-50">{handleCreatedAt(data.createdAt)}</span>
                     </div>

@@ -8,9 +8,10 @@ export const getAllTweetsQuery = graphql(`#graphql
             id
             imageURL
             author {
-            firstName
-            lastName
-            profileImageURL
+                firstName
+                lastName
+                profileImageURL
+                id
             }
             createdAt
         }

@@ -15,7 +15,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "#graphql\n    mutation Mutation($payload: createTweetData!) {\n        createTweet(payload: $payload) {\n            id\n        }\n}\n    ": types.MutationDocument,
-    "#graphql\n\n    query GetAllTweets {\n        getAllTweets {\n            content\n            id\n            imageURL\n            author {\n            firstName\n            lastName\n            profileImageURL\n            }\n            createdAt\n        }\n}": types.GetAllTweetsDocument,
+    "#graphql\n\n    query GetAllTweets {\n        getAllTweets {\n            content\n            id\n            imageURL\n            author {\n                firstName\n                lastName\n                profileImageURL\n                id\n            }\n            createdAt\n        }\n}": types.GetAllTweetsDocument,
     "#graphql\n    query verifyUserGoogleToken($token: String!) {\n        verifyGoogleToken(token: $token)\n    }\n    ": types.VerifyUserGoogleTokenDocument,
     "#graphql\n    query GetCurrentUser {\n        getCurrentUser {\n            id\n            profileImageURL\n            lastName\n            firstName\n            email\n            tweets {\n                id\n                content\n                createdAt\n                author {\n                    firstName\n                    lastName\n                    profileImageURL\n                }\n            }\n        }\n    }\n": types.GetCurrentUserDocument,
     "#graphql\n    query GetUserById($id: ID!) {\n  getUserById(id: $id) {\n    id\n    firstName\n    lastName\n    email\n    profileImageURL\n    tweets {\n      id\n      content\n      imageURL\n      createdAt\n      author {\n            firstName\n            lastName\n            profileImageURL\n        }\n    }\n  }\n}\n": types.GetUserByIdDocument,
@@ -42,7 +42,7 @@ export function graphql(source: "#graphql\n    mutation Mutation($payload: creat
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "#graphql\n\n    query GetAllTweets {\n        getAllTweets {\n            content\n            id\n            imageURL\n            author {\n            firstName\n            lastName\n            profileImageURL\n            }\n            createdAt\n        }\n}"): (typeof documents)["#graphql\n\n    query GetAllTweets {\n        getAllTweets {\n            content\n            id\n            imageURL\n            author {\n            firstName\n            lastName\n            profileImageURL\n            }\n            createdAt\n        }\n}"];
+export function graphql(source: "#graphql\n\n    query GetAllTweets {\n        getAllTweets {\n            content\n            id\n            imageURL\n            author {\n                firstName\n                lastName\n                profileImageURL\n                id\n            }\n            createdAt\n        }\n}"): (typeof documents)["#graphql\n\n    query GetAllTweets {\n        getAllTweets {\n            content\n            id\n            imageURL\n            author {\n                firstName\n                lastName\n                profileImageURL\n                id\n            }\n            createdAt\n        }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

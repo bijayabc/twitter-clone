@@ -7,11 +7,17 @@ import TwitterLayout from "@/components/Layouts/TwitterLayout";
 import FeedCard from "@/components/feedCard";
 import { BiImage } from "react-icons/bi";
 import Image from "next/image";
+import { GetServerSideProps } from "next";
+import { graphqlClient } from "@/clients/api";
+import { getAllTweetsQuery } from "@/graphql/query/tweet";
 
-export default function Home() {
+interface HomeProps {
+  tweets: Tweet[]
+}
+
+export default function Home(props: HomeProps) {
 
   const {user} = useCurrentUser()
-  const {tweets} = useGetAllTweets()
   const {mutate} = useCreateTweet()
   const [content, setContent] = useState("")
 
@@ -79,9 +85,19 @@ export default function Home() {
         
                 {/* Load all the tweets */}
                 {
-                    tweets?.map(tweet => <FeedCard key={tweet?.id} data={tweet as Tweet}/>)
+                    props.tweets?.map(tweet => <FeedCard key={tweet?.id} data={tweet as Tweet}/>)
                 }
       </TwitterLayout>
     </div>
   )
+}
+
+// Render tweets server side by using getServerSideProps
+export const getServerSideProps: GetServerSideProps<HomeProps> = async(context) => {
+  const tweets = await graphqlClient.request(getAllTweetsQuery)
+  return {
+    props: {
+      tweets: tweets.getAllTweets as Tweet[]
+    }
+  }
 }
