@@ -1,0 +1,13 @@
+delete the image from s3 if the user loads the image but doesn't upload it
+
+If A doesn't follow B but you try to use apollo to unfollow B anyway, Prisma throws an error, 
+maybe handle that but might not be necessary because users will not be able to unfollow before following first
+
+
+if you ever decide to change the userRecommendation engine to fit the one shown in the tutorial, watch the user userRecommendation chapter and 
+change the userRecommendation extraresolver in user/resolvers in twitter-server
+
+
+add support for three dots and tweet deletion
+
+remove people you may knowwhen there are no recommended users

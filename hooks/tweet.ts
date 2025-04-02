@@ -8,13 +8,17 @@ import toast from "react-hot-toast";
 export const useCreateTweet = () => {
     const queryClient = useQueryClient()
 
+    // `mutate` is a default property of the object returned by useMutation().
+    // It triggers the mutation function to create a tweet.
     const mutation = useMutation({
         mutationFn: (payload: CreateTweetData) => graphqlClient.request(createTweetMutation, {payload}),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["all-tweets"] })
             toast.success("Tweet Created Successfully")
         },
-        onError: (error, variables, context) => toast.error("Failed to create tweet!")
+        onError: (error, variables, context) => {
+            toast.error(`Failed to create tweet!`)
+        }
     })
     return mutation
 }

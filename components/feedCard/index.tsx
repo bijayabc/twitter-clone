@@ -11,8 +11,10 @@ interface FeedCardProps {
 }
 
 const handleCreatedAt = (createdAt: string) => {
+    // const createdDate = new Date(Number(createdAt)); 
+    // removed the number part because redis returns strings not dates unlike values stored in postgres db
+    const createdDate = new Date(createdAt);
     const now = new Date()
-    const createdDate = new Date(Number(createdAt));
     const difference = now.getTime() - createdDate.getTime()
 
     // Convert the difference to different time units
@@ -61,7 +63,7 @@ const FeedCard: React.FC<FeedCardProps> = (props) => {
                     {/* tweet header */}
                     <div>
                         <Link href={`/${data.author?.id}`}>
-                            <span className="font-semibold mr-2">{data.author?.firstName} {data.author?.lastName} </span>
+                            <span className="font-semibold mr-2">{data.author?.firstName} {data.author?.lastName}</span>
                         </Link>
 
                         <span className="opacity-50">{handleCreatedAt(data.createdAt)}</span>
@@ -70,6 +72,7 @@ const FeedCard: React.FC<FeedCardProps> = (props) => {
                     {/* tweet body */}
                     <div>
                         {data.content}
+                        {data.imageURL && < Image src={data.imageURL} alt={'tweet-image'} height={400} width={400}/>}
                     </div>
 
                     {/* tweet interaction icons */}

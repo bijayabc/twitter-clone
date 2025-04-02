@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
         hostname: 'lh3.googleusercontent.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'twitter-clone-objects-bucket.s3.us-east-2.amazonaws.com',
+        pathname: '/**',
+      },
     ],
   },
 };

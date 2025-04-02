@@ -8,11 +8,19 @@ export const getAllTweetsQuery = graphql(`#graphql
             id
             imageURL
             author {
+                email
+                id
                 firstName
                 lastName
                 profileImageURL
-                id
             }
             createdAt
         }
-}`)
+    }
+`)
+
+export const getPresignedURLForTweetQuery = graphql(`#graphql
+    query Query($imageName: String!, $imageType: String!) {
+        getPresignedURLForTweet(imageName: $imageName, imageType: $imageType)
+    }
+`)
