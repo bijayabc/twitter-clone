@@ -32,7 +32,7 @@ const UserProfilePage: NextPage<ServerProps> = (props) => {
         }
         queryClient.invalidateQueries({ queryKey: ["current-user"] })
         router.reload()
-    }, [props.userInfo?.id]);
+    }, [props.userInfo?.id, queryClient, router]);
 
     const handleUnfollowUser = useCallback(async () => {
         if (!props.userInfo?.id) return;
@@ -44,7 +44,7 @@ const UserProfilePage: NextPage<ServerProps> = (props) => {
         }
         queryClient.invalidateQueries({ queryKey: ["current-user"] })
         router.reload()
-    }, [props.userInfo?.id]);
+    }, [props.userInfo?.id, queryClient, router]);
 
     return (
         <div>

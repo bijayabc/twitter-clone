@@ -7,16 +7,12 @@ import TwitterLayout from "@/components/Layouts/TwitterLayout";
 import FeedCard from "@/components/feedCard";
 import { BiImage } from "react-icons/bi";
 import Image from "next/image";
-import { GetServerSideProps } from "next";
 import { graphqlClient } from "@/clients/api";
-import { getAllTweetsQuery, getPresignedURLForTweetQuery } from "@/graphql/query/tweet";
+import { getPresignedURLForTweetQuery } from "@/graphql/query/tweet";
 import axios from "axios";
 
-interface HomeProps {
-  tweets: Tweet[]
-}
 
-export default function Home(props: HomeProps) {
+export default function Home() {
 
   const { user } = useCurrentUser()
   const { tweets } = useGetAllTweets()
@@ -38,7 +34,7 @@ export default function Home(props: HomeProps) {
 
       if (getPresignedURLForTweet) {
 
-        toast.loading('Uploading', {id: '2'})
+        toast.loading('Uploading', { id: '2' })
         try {
           const response = await axios.put(getPresignedURLForTweet, file, {
             headers: {
@@ -47,9 +43,9 @@ export default function Home(props: HomeProps) {
           });
           console.log('Upload successful:', response.data);
         } catch (error) {
-          console.log('Upload failed:', (error as any)?.response?.data ?? (error as Error)?.message ?? 'Unknown error');
+          console.log('Upload failed:', error);
         }
-        toast.success('Upload Complete', {id: '2'})
+        toast.success('Upload Complete', { id: '2' })
 
         const url = new URL(getPresignedURLForTweet)
         const myFilePath = `${url.origin}${url.pathname}`
@@ -71,7 +67,7 @@ export default function Home(props: HomeProps) {
     input.click()
   }, [handleInputFileChange])
 
-  const handleCreateTweet = useCallback( async (e: React.FormEvent) => {
+  const handleCreateTweet = useCallback(async () => {
     if (content.trim() === "") {
       toast.error("Tweet content cannot be empty!");
       return;
@@ -80,7 +76,7 @@ export default function Home(props: HomeProps) {
       await mutate({ content, imageURL });
       setContent(""); // Reset content after successful tweet
       setImageURL(""); // Reset imageURL after successful tweet
-    } catch (err) {
+    } catch {
       toast.error(`Failed to create tweet!`);
     }
   }, [content, mutate, imageURL])
@@ -111,7 +107,7 @@ export default function Home(props: HomeProps) {
             ></textarea>
 
             {
-              imageURL && <Image src={imageURL} alt={"tweet-uploaded-image"} width={300} height={300} className=""/>
+              imageURL && <Image src={imageURL} alt={"tweet-uploaded-image"} width={300} height={300} className="" />
             }
 
             <div className="flex justify-between items-center py-1">
@@ -136,13 +132,3 @@ export default function Home(props: HomeProps) {
     </div>
   )
 }
-
-// Render tweets server side by using getServerSideProps
-// export const getServerSideProps: GetServerSideProps<HomeProps> = async (context) => {
-//   const tweets = await graphqlClient.request(getAllTweetsQuery)
-//   return {
-//     props: {
-//       tweets: tweets.getAllTweets as Tweet[]
-//     }
-//   }
-// }
