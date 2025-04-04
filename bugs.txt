@@ -11,3 +11,5 @@ change the userRecommendation extraresolver in user/resolvers in twitter-server
 add support for three dots and tweet deletion
 
 remove people you may knowwhen there are no recommended users
+
+fix hardcoded likes, comments and so on..
