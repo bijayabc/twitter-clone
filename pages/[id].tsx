@@ -20,6 +20,7 @@ interface ServerProps {
 const UserProfilePage: NextPage<ServerProps> = (props) => {
     const router = useRouter();
     const { user: currentUser } = useCurrentUser()
+    console.log("current user: ", currentUser)
     const queryClient = useQueryClient()
 
     const handleFollowUser = useCallback(async () => {
