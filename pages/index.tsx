@@ -116,7 +116,7 @@ export default function Home() {
               </div>
               <button
                 onClick={handleCreateTweet}
-                className="text-md font-bold bg-[#1A8CD8] w-fit py-1 px-3 rounded-3xl">
+                className="text-md font-bold bg-[#1A8CD8] w-fit py-1 px-3 rounded-3xl hover:bg-[#1A8Cff]">
                 Post
               </button>
             </div>

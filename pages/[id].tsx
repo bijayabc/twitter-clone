@@ -115,7 +115,6 @@ export const getServerSideProps: GetServerSideProps<ServerProps> = async (contex
 
     if (!id) return { notFound: true, props: { userInfo: undefined } }
 
-    // A bug is causing the user's tweets to only return with firstName, lastName, profileImageURL'
     const userInfo = await graphqlClient.request(getUserByIdQuery, { id })
 
     if (!userInfo.getUserById) return { notFound: true }

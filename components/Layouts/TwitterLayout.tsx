@@ -1,6 +1,6 @@
 import { useCurrentUser } from '@/hooks/user'
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google"
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { AiOutlineThunderbolt } from 'react-icons/ai'
 import { BiBell, BiBookmark, BiEnvelope, BiHomeCircle, BiSearch } from 'react-icons/bi'
 import { BsPeople, BsPerson } from 'react-icons/bs'
@@ -27,6 +27,7 @@ interface TwitterLayoutProps {
 const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
     const { user } = useCurrentUser()
     const queryClient = useQueryClient()
+    const [showLogoutMenu, setshowLogoutMenu] = useState(false)
 
     const sidebarItems: SidebarItem[] = useMemo(
         () => [
@@ -42,6 +43,15 @@ const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
             { title: 'Profile', icon: <BsPerson />, link: user?.id ? `/${user.id}` : "/" },
             { title: 'More', icon: <CgMoreO />, link: `/` }
         ], [user?.id])
+
+    const handleToggleMenu = () => {
+        setshowLogoutMenu(prev => !prev)
+    }
+
+    const handleLogout = () => {
+        window.localStorage.removeItem('__twitter_token')
+        window.location.href = '/'
+    }
 
 
     const handleLoginWithGoogle = useCallback(async (cred: CredentialResponse) => {
@@ -63,6 +73,9 @@ const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
         if (verifyGoogleToken) {
             window.localStorage.setItem('__twitter_token', verifyGoogleToken)
         }
+        graphqlClient.setHeaders({
+            authorization: `Bearer ${verifyGoogleToken}`,
+        });
 
         // Triggers a refetch to update the query data after new token is set because old data is stale.
         await queryClient.invalidateQueries({ queryKey: ['current-user'] })
@@ -102,9 +115,21 @@ const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
                             </button>
                         </div>
 
+                        {/* Logout Menu (hidden by default, shown when `showLogoutMenu` is true) */}
+                        {showLogoutMenu && (
+                            <div className="absolute bottom-24 flex items-center hover:bg-slate-800 p-2 rounded-full bg-slate-700 hover:cursor-pointer">
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full text-left py-2 px-4 hover:bg-gray-700 rounded-lg"
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        )}
                         {/* user-info component rendered when an user is logged in*/}
                         {user &&
-                            <div className="absolute bottom-5 flex items-center hover:bg-slate-800 p-2 rounded-full bg-slate-700">
+                            <div className={`absolute bottom-5 flex items-center hover:bg-slate-800 p-2 rounded-full bg-slate-700 hover:cursor-pointer`}
+                            onClick={handleToggleMenu}>
 
                                 {/* flex item 1 user image */}
                                 <div>
@@ -151,7 +176,7 @@ const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
                                             className="rounded-3xl" />
                                         <div>
                                             <div>{recommendedUser?.firstName} {recommendedUser?.lastName}</div>
-                                            <Link href={`/${recommendedUser?.id}`} className='bg-white text-black rounded-md px-4'>View</Link>
+                                            <Link href={`/${recommendedUser?.id}`} className='bg-white text-black rounded-md px-4 hover:bg-[#aaa]'>View</Link>
                                         </div>
                                     </div>
                                 )

@@ -1,19 +1,26 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import Image from 'next/image'
 import { FaRegHeart, FaRegComment, FaRetweet, FaRegBookmark } from "react-icons/fa";
+import { MdDeleteOutline } from "react-icons/md";
 import { IoMdStats } from "react-icons/io";
 import { GoUpload } from "react-icons/go";
 import { Tweet } from '@/gql/graphql';
 import Link from 'next/link';
+import { useDeleteTweet } from '@/hooks/tweet';
+import { useCurrentUser } from '@/hooks/user';
+// import { useDeleteTweet } from '@/hooks/tweet';
 
 interface FeedCardProps {
     data: Tweet
 }
 
 const handleCreatedAt = (createdAt: string) => {
-    // const createdDate = new Date(Number(createdAt)); 
-    // removed the number part because redis returns strings not dates unlike values stored in postgres db
-    const createdDate = new Date(createdAt);
+    // Check if createdAt is a numeric timestamp (From Redis). If so, convert it to a number before creating a Date.
+    // Otherwise, assume it's an ISO date string (from Postgres via GraphQL) and pass it directly.
+    const createdDate = new Date(
+        /^\d+$/.test(createdAt) ? Number(createdAt) : createdAt
+    );  
+
     const now = new Date()
     const difference = now.getTime() - createdDate.getTime()
 
@@ -43,8 +50,15 @@ const handleCreatedAt = (createdAt: string) => {
     }
 }
 
+
 const FeedCard: React.FC<FeedCardProps> = (props) => {
+    const { user: currentUser } = useCurrentUser()
     const {data} = props
+    const {mutate} = useDeleteTweet()
+
+    const handleDelete = useCallback(() => {
+        mutate(data.id)
+    }, [mutate, data.id])
 
     return (
         <>
@@ -61,12 +75,20 @@ const FeedCard: React.FC<FeedCardProps> = (props) => {
                 {/* div for content */}
                 <div className="col-span-11 flex flex-col items-start pl-1">
                     {/* tweet header */}
-                    <div>
-                        <Link href={`/${data.author?.id}`}>
-                            <span className="font-semibold mr-2">{data.author?.firstName} {data.author?.lastName}</span>
-                        </Link>
+                    <div className='flex items-center justify-between w-full'>
+                        <div>
+                            <Link href={`/${data.author?.id}`}>
+                                <span className="font-semibold mr-2 hover:opacity-70">{data.author?.firstName} {data.author?.lastName}</span>
+                            </Link>
 
-                        <span className="opacity-50">{handleCreatedAt(data.createdAt)}</span>
+                            <span className="opacity-50">{handleCreatedAt(data.createdAt)}</span>
+                        </div>
+                        {currentUser?.id == data.author?.id && 
+                            <div className="p-1 rounded-full hover:bg-red-600 hover:text-white transition cursor-pointer"
+                            onClick={handleDelete}>
+                            <MdDeleteOutline className="w-5 h-5" />
+                        </div>
+                        }
                     </div>
 
                     {/* tweet body */}
@@ -79,22 +101,22 @@ const FeedCard: React.FC<FeedCardProps> = (props) => {
                     <div className='flex items-center justify-between w-full mt-2 opacity-50'>
                         <div className='flex items-center gap-1'> 
                             <span className='p-2 rounded-full hover:bg-gray-800'> <FaRegComment /> </span> 
-                            <span> 397 </span> 
+                            <span> 0 </span> 
                         </div>
 
                         <div className='flex items-center gap-1'> 
                         <   span className='p-2 rounded-full hover:bg-gray-800'> <FaRetweet /> </span> 
-                            <span> 4K </span> 
+                            <span> 0 </span> 
                         </div>
 
                         <div className='flex items-center gap-1'> 
                             <span className='p-2 rounded-full hover:bg-gray-800'> <FaRegHeart /> </span>
-                            <span> 22K </span> 
+                            <span> 0 </span> 
                         </div>
 
                         <div className='flex items-center gap-1'>
                             <span className='p-2 rounded-full hover:bg-gray-800'> <IoMdStats /> </span>  
-                            <span> 2.5M </span> 
+                            <span> 0 </span> 
                         </div>
 
                         <div>

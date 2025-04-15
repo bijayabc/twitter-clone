@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
         hostname: 'twitter-clone-objects-bucket.s3.us-east-2.amazonaws.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**'
+      }
     ],
   },
 };
